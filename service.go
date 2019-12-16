@@ -103,7 +103,6 @@ func (d *DiagnosticsServer) SearchLog(req *pb.SearchLogRequest, stream pb.Diagno
 // ServerInfo implements the DiagnosticsServer interface.
 func (d *DiagnosticsServer) ServerInfo(ctx context.Context, req *pb.ServerInfoRequest) (*pb.ServerInfoResponse, error) {
 	var items []*pb.ServerInfoItem
-	fmt.Printf("diagnostic server get server info: %v\n-------\n", req.Tp)
 	var err error
 	switch req.Tp {
 	case pb.ServerInfoType_LoadInfo:
@@ -113,6 +112,7 @@ func (d *DiagnosticsServer) ServerInfo(ctx context.Context, req *pb.ServerInfoRe
 	case pb.ServerInfoType_SystemInfo:
 		items, err = getSystemInfo()
 	}
+	fmt.Printf("diagnostic server get server info: %v, err:%v\n-------\n", req.Tp, err)
 	if err != nil {
 		return nil, err
 	}
