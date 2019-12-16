@@ -17,6 +17,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"strconv"
 	"time"
 
@@ -54,27 +55,31 @@ var multiDevicesLoadInfoFns = []struct {
 
 func getLoadInfo() ([]*pb.ServerInfoItem, error) {
 	items := make([]*pb.ServerInfoItem, 0, len(singleDevicesLoadInfoFns))
-	for _, f := range singleDevicesLoadInfoFns {
+	for name, f := range singleDevicesLoadInfoFns {
 		data, err := f.fn()
 		if err != nil {
-			return nil, err
+			log.Printf("get %v info error: %v", name, err)
+			continue
 		}
 		item, err := convertToServerInfoItems(f.tp, f.name, data)
 		if err != nil {
-			return nil, err
+			log.Printf("convert %v info error: %v", name, err)
+			continue
 		}
 		items = append(items, item)
 	}
-	for _, f := range multiDevicesLoadInfoFns {
+	for name, f := range multiDevicesLoadInfoFns {
 		ds, err := f.fn()
 		if err != nil {
-			return nil, err
+			log.Printf("get %v info error: %v", name, err)
+			continue
 		}
 
 		for k, data := range ds {
 			item, err := convertToServerInfoItems(f.tp, k, data)
 			if err != nil {
-				return nil, err
+				log.Printf("convert %v info error: %v", k, err)
+				continue
 			}
 			items = append(items, item)
 		}
