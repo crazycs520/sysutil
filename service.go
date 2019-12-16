@@ -15,6 +15,7 @@ package sysutil
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"math"
 	"os"
@@ -102,6 +103,7 @@ func (d *DiagnosticsServer) SearchLog(req *pb.SearchLogRequest, stream pb.Diagno
 // ServerInfo implements the DiagnosticsServer interface.
 func (d *DiagnosticsServer) ServerInfo(ctx context.Context, req *pb.ServerInfoRequest) (*pb.ServerInfoResponse, error) {
 	var items []*pb.ServerInfoItem
+	fmt.Printf("diagnostic server get server info: %v\n-------\n", req.Tp)
 	var err error
 	switch req.Tp {
 	case pb.ServerInfoType_LoadInfo:
