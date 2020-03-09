@@ -12,6 +12,8 @@ import (
 	"github.com/shirou/gopsutil/net"
 )
 
+const diskNamePrefix = "/dev/"
+
 func getHardwareInfo() []*pb.ServerInfoItem {
 	var results []*pb.ServerInfoItem
 	// cpu
@@ -49,16 +51,17 @@ func getHardwareInfo() []*pb.ServerInfoItem {
 	parts, err := disk.Partitions(true)
 	if err == nil && len(parts) > 0 {
 		for _, p := range parts {
-			if !strings.HasPrefix(p.Device, "/dev/") {
+			if !strings.HasPrefix(p.Device, diskNamePrefix) {
 				continue
 			}
+			name := p.Device[len(diskNamePrefix):]
 			usage, err := disk.Usage(p.Mountpoint)
 			if err != nil {
 				continue
 			}
 			results = append(results, &pb.ServerInfoItem{
 				Tp:   "disk",
-				Name: p.Device[5:],
+				Name: name,
 				Pairs: []*pb.ServerInfoPair{
 					{Key: "fstype", Value: p.Fstype},
 					{Key: "opts", Value: p.Opts},
