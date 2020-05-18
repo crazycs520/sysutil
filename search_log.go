@@ -59,6 +59,7 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 		if info.IsDir() {
 			return nil
 		}
+		fmt.Printf("prefix: %v, %v, %v, -------------\n\n", path, filePrefix, ext)
 		// All rotated log files have the same prefix and extension with the original file
 		if !strings.HasPrefix(path, filePrefix) {
 			return nil
@@ -66,6 +67,8 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 		if !strings.HasSuffix(path, ext) {
 			return nil
 		}
+
+		fmt.Printf("step: %v  -0------------\n\n", path)
 		// If we cannot open the file, we skip to search the file instead of returning
 		// error and abort entire searching task.
 		// TODO: do we need to return some warning to client?
@@ -73,6 +76,7 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 		if err != nil {
 			return nil
 		}
+		fmt.Printf("step: %v  -1------------\n\n", path)
 		reader := bufio.NewReader(file)
 		// Skip this file if cannot read the first line
 		firstLine, err := readLine(reader)
@@ -80,12 +84,14 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 			skipFiles = append(skipFiles, file)
 			return nil
 		}
+		fmt.Printf("step: %v  -2------------\n\n", path)
 		// Skip this file if the first line is not a valid log message
 		firstItem, err := parseLogItem(firstLine)
 		if err != nil {
 			skipFiles = append(skipFiles, file)
 			return nil
 		}
+		fmt.Printf("step: %v  -3------------\n\n", path)
 		// Skip this file if cannot read the last line
 		lastLine := readLastLine(file)
 		// Skip this file if the last line is not a valid log message
@@ -94,6 +100,7 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 			skipFiles = append(skipFiles, file)
 			return nil
 		}
+		fmt.Printf("step: %v  -4------------\n\n", path)
 		// Reset position to the start and skip this file if cannot seek to start
 		if _, err := file.Seek(0, io.SeekStart); err != nil {
 			skipFiles = append(skipFiles, file)
