@@ -51,6 +51,7 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 	logDir := filepath.Dir(logFilePath)
 	ext := filepath.Ext(logFilePath)
 	filePrefix := logFilePath[:len(logFilePath)-len(ext)]
+	fmt.Printf("%v, %v, %v -------------\n\n", logDir, filePrefix, ext)
 	err := filepath.Walk(logDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -98,6 +99,7 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 			skipFiles = append(skipFiles, file)
 			return nil
 		}
+		fmt.Printf("%v, %v , %v, %v, %v, %v  -------------search log----\n\n", file.Name(), beginTime, lastItem.Time, endTime, firstItem.Time, beginTime > lastItem.Time || endTime < firstItem.Time)
 		if beginTime > lastItem.Time || endTime < firstItem.Time {
 			skipFiles = append(skipFiles, file)
 		} else {
