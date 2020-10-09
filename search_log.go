@@ -149,7 +149,6 @@ func readLastValidLog(file *os.File, tryLines int) (*pb.LogMessage, error) {
 		endCursor -= int64(readBytes)
 		for i := len(lines) - 1; i >= 0; i-- {
 			item, err := parseLogItem(lines[i])
-			fmt.Printf("last log: %v , %v, %v\n", lines[i], len(lines), err)
 			if err == nil {
 				return item, nil
 			}
@@ -196,7 +195,6 @@ func readLastLines(file *os.File, endCursor int64) ([]string, int) {
 		}
 		cursor -= size
 
-		fmt.Printf("cursor: %v \n", cursor)
 		file.Seek(cursor, io.SeekStart)
 		chars := make([]byte, size)
 		file.Read(chars)
@@ -253,6 +251,7 @@ func ParseLogLevel(s string) pb.LogLevel {
 // [2019/08/21 01:43:01.460 -04:00] [INFO] [util.go:60] [PD] [release-version=v3.0.2]
 // [2019/08/26 07:20:23.815 -04:00] [INFO] [mod.rs:28] ["Release Version:   3.0.2"]
 func parseLogItem(s string) (*pb.LogMessage, error) {
+	time.Sleep(time.Millisecond)
 	timeLeftBound := strings.Index(s, "[")
 	timeRightBound := strings.Index(s, "]")
 	if timeLeftBound == -1 || timeRightBound == -1 || timeLeftBound > timeRightBound {
