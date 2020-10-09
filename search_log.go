@@ -148,8 +148,8 @@ func readLastValidLog(file *os.File, tryLines int) (*pb.LogMessage, error) {
 		}
 		endCursor -= int64(readBytes)
 		for i := len(lines) - 1; i >= 0; i-- {
-			fmt.Printf("%v , %v\n", lines[i], len(lines))
 			item, err := parseLogItem(lines[i])
+			fmt.Printf("last log: %v , %v, %v\n", lines[i], len(lines), err)
 			if err == nil {
 				return item, nil
 			}
