@@ -137,7 +137,6 @@ func isCtxDone(ctx context.Context) bool {
 func readFirstValidLog(ctx context.Context, reader *bufio.Reader, tryLines int64) (*pb.LogMessage, error) {
 	var tried int64
 	for {
-		time.Sleep(time.Second)
 		line, err := readLine(reader)
 		if err != nil {
 			return nil, err
@@ -162,7 +161,6 @@ func readLastValidLog(ctx context.Context, file *os.File, tryLines int) (*pb.Log
 	stat, _ := file.Stat()
 	endCursor := stat.Size()
 	for {
-		time.Sleep(time.Second)
 		lines, readBytes := readLastLines(file, endCursor)
 		// read out the file
 		if readBytes == 0 {
