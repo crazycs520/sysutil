@@ -91,6 +91,7 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 			skipFiles = append(skipFiles, file)
 			return nil
 		}
+		time.Sleep(time.Second)
 
 		if beginTime > lastItem.Time || endTime < firstItem.Time {
 			skipFiles = append(skipFiles, file)
@@ -103,6 +104,8 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 		}
 		return nil
 	})
+
+	fmt.Printf("resolve log finish --\n")
 
 	defer func() {
 		for _, f := range skipFiles {
