@@ -47,7 +47,8 @@ func (d *DiagnosticsServer) SearchLog(req *pb.SearchLogRequest, stream pb.Diagno
 		endTime = math.MaxInt64
 	}
 
-	logFiles, err := resolveFiles(stream.Context(), d.logFile, beginTime, endTime)
+	ctx := stream.Context()
+	logFiles, err := resolveFiles(ctx, d.logFile, beginTime, endTime)
 	if err != nil {
 		return err
 	}
@@ -82,7 +83,7 @@ func (d *DiagnosticsServer) SearchLog(req *pb.SearchLogRequest, stream pb.Diagno
 		var messages []*pb.LogMessage
 		var drained bool
 		for i := 0; i < 1024; i++ {
-			item, err := iter.next()
+			item, err := iter.next(ctx)
 			if err == io.EOF {
 				drained = true
 				break
