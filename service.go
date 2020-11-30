@@ -15,11 +15,13 @@ package sysutil
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"math"
 	"os"
 	"regexp"
 	"sort"
+	"time"
 
 	pb "github.com/pingcap/kvproto/pkg/diagnosticspb"
 )
@@ -36,6 +38,9 @@ func NewDiagnosticsServer(logFile string) *DiagnosticsServer {
 
 // SearchLog implements the DiagnosticsServer interface.
 func (d *DiagnosticsServer) SearchLog(req *pb.SearchLogRequest, stream pb.Diagnostics_SearchLogServer) error {
+	defer func() {
+		fmt.Println("SearchLog finish: %v, --\n", time.Now())
+	}()
 	beginTime := req.StartTime
 	endTime := req.EndTime
 	if endTime == 0 {
@@ -96,6 +101,7 @@ func (d *DiagnosticsServer) SearchLog(req *pb.SearchLogRequest, stream pb.Diagno
 		if drained {
 			break
 		}
+		time.Sleep(time.Second)
 	}
 	return nil
 }
