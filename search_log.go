@@ -15,6 +15,7 @@ package sysutil
 
 import (
 	"bufio"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -41,7 +42,7 @@ func (l *logFile) EndTime() int64 {
 	return l.end
 }
 
-func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, error) {
+func resolveFiles(ctx context.Context, logFilePath string, beginTime, endTime int64) ([]logFile, error) {
 	if logFilePath == "" {
 		return nil, errors.New("empty log file location configuration")
 	}
@@ -64,6 +65,12 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 		}
 		if !strings.HasSuffix(path, ext) {
 			return nil
+		}
+		select {
+		case <-ctx.Done():
+			fmt.Printf("resolve log canceled --\n")
+			return context.Canceled
+		default:
 		}
 		// If we cannot open the file, we skip to search the file instead of returning
 		// error and abort entire searching task.
@@ -105,7 +112,7 @@ func resolveFiles(logFilePath string, beginTime, endTime int64) ([]logFile, erro
 		return nil
 	})
 
-	fmt.Printf("resolve log finish --\n")
+	fmt.Printf("resolve log finish   %v--\n", time.Now())
 
 	defer func() {
 		for _, f := range skipFiles {
